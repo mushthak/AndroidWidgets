@@ -1,21 +1,17 @@
 package com.cardiomood.andoid.demo;
 
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cardiomood.android.controls.gauge.BatteryIndicatorGauge;
 import com.cardiomood.android.controls.gauge.SpeedometerGauge;
-import com.cardiomood.android.controls.progress.CircularProgressBar;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private SpeedometerGauge speedometer;
-    private BatteryIndicatorGauge batteryindicator;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,16 +28,18 @@ public class MainActivity extends ActionBarActivity {
         speedometer.setMaxSpeed(50);
         speedometer.setMajorTickStep(5);
         speedometer.setMinorTicks(4);
-        speedometer.addColoredRange(0, 30, Color.GREEN);
-        speedometer.addColoredRange(30, 45, Color.YELLOW);
-        speedometer.addColoredRange(45, 50, Color.RED);
-        speedometer.setSpeed(33, 1000, 300);
+        speedometer.setMaxSpeed(50);
+        speedometer.setMajorTickStep(5);
+        speedometer.setMinorTicks(0);
 
-        batteryindicator = (BatteryIndicatorGauge) findViewById(R.id.batteryindicator);
-        batteryindicator.setValue(80, 1000, 300);
+        speedometer.addColoredRange(0, 10, ContextCompat.getColor(this,R.color.gauge_blue));
+        speedometer.addColoredRange(10, 20, ContextCompat.getColor(this,R.color.gauge_lg_green));
+        speedometer.addColoredRange(20, 30, ContextCompat.getColor(this,R.color.gauge_dk_green));
+        speedometer.addColoredRange(30, 35, ContextCompat.getColor(this,R.color.gauge_lg_orange));
+        speedometer.addColoredRange(35, 40, ContextCompat.getColor(this,R.color.gauge_dk_orange));
+        speedometer.addColoredRange(40, 50, ContextCompat.getColor(this,R.color.gauge_red));
+        speedometer.setSpeed(50, 1000, 300);
 
-        CircularProgressBar circ = (CircularProgressBar) findViewById(R.id.circularprogress);
-        circ.setProgress(90, 1000);
     }
 
 
