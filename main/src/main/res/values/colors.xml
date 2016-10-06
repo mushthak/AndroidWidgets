@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="gauge_blue" type="color">#52C3E6</item>
+    <item name="gauge_lg_green" type="color">#52C3B9</item>
+    <item name="gauge_dk_green" type="color">#3DA283</item>
+    <item name="gauge_lg_orange" type="color">#F1B844</item>
+    <item name="gauge_dk_orange" type="color">#F0A33F</item>
+    <item name="gauge_red" type="color">#EC5B71</item>
+</resources>

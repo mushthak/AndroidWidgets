@@ -4,17 +4,15 @@ import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.cardiomood.android.controls.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +23,41 @@ import java.util.List;
  * Created by danon on 26.02.14.
  * @version 1.0
  * @author Anton Danshin <a href="mailto:anton.danshin@frtk.ru">anton.danshin@frtk.ru</a>
+ */
+
+
+/*
+Usage:
+copy paste this method tn your activity:
+
+    private void setSpeedometer() {
+        speedometer = (SpeedometerGauge) findViewById(R.id.speedometer);
+        speedometer.setMaxSpeed(50);
+        speedometer.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+            @Override
+            public String getLabelFor(double progress, double maxProgress) {
+                return String.valueOf((int) Math.round(progress));
+            }
+        });
+        speedometer.setMaxSpeed(50);
+        speedometer.setMajorTickStep(5);
+        speedometer.setMinorTicks(0);
+
+        speedometer.addColoredRange(0, 10, ContextCompat.getColor(this,R.color.gauge_blue));
+        speedometer.addColoredRange(10, 20, ContextCompat.getColor(this,R.color.gauge_lg_green));
+        speedometer.addColoredRange(20, 30, ContextCompat.getColor(this,R.color.gauge_dk_green));
+        speedometer.addColoredRange(30, 35, ContextCompat.getColor(this,R.color.gauge_lg_orange));
+        speedometer.addColoredRange(35, 40, ContextCompat.getColor(this,R.color.gauge_dk_orange));
+        speedometer.addColoredRange(40, 50, ContextCompat.getColor(this,R.color.gauge_red));
+        speedometer.setSpeed(50, 1000, 300);
+    }
+
+In XML:
+    <ae.primehealth.ui.custom.SpeedometerGauge
+        android:id="@+id/speedometer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"/>
  */
 public class SpeedometerGauge extends View {
 
@@ -57,7 +90,7 @@ public class SpeedometerGauge extends View {
     private int labelTextSize;
     private int unitsTextSize;
 
-    private Bitmap mMask;
+//    private Bitmap mMask;
 
     public SpeedometerGauge(Context context) {
         super(context);
@@ -229,7 +262,7 @@ public class SpeedometerGauge extends View {
         canvas.drawColor(Color.TRANSPARENT);
 
         // Draw Metallic Arc and background
-        drawBackground(canvas);
+//        drawBackground(canvas);
 
         // Draw Ticks and colored arc
         drawTicks(canvas);
@@ -282,12 +315,14 @@ public class SpeedometerGauge extends View {
 
     private void drawNeedle(Canvas canvas) {
         RectF oval = getOval(canvas, 1);
-        float radius = oval.width()*0.35f + 10;
-        RectF smallOval = getOval(canvas, 0.2f);
+//        float radius = oval.width()*0.35f + 10;
+        float radius = oval.width()*0.26f + 10;
+
+        RectF smallOval = getOval(canvas, 0.15f);
 
         float angle = 10 + (float) (getSpeed()/ getMaxSpeed()*160);
         canvas.drawLine(
-                (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.5f),
+                (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.3f),
                 (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * smallOval.width()*0.5f),
                 (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * (radius)),
                 (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * (radius)),
@@ -296,6 +331,34 @@ public class SpeedometerGauge extends View {
 
 
         canvas.drawArc(smallOval, 180, 180, true, backgroundPaint);
+
+//        Paint paint = new Paint();
+//        paint.setStrokeWidth(4);
+//        paint.setColor(android.graphics.Color.RED);
+//        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+//        paint.setAntiAlias(true);
+
+//        Point a = new Point((int) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.3f),
+//                (int) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * smallOval.width()*0.5f));
+//        Point b = new Point((int) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.3f), 100);
+
+//        Point b = new Point((int) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.5f),
+//                (int) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * smallOval.width()*0.5f));
+
+//        Point b = new Point((int) (oval.centerX()+10),
+//                (int) (oval.centerY()));
+//        Point c = new Point((int) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * (radius)), (int) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * (radius)));
+//
+//        Path path = new Path();
+//        path.setFillType(Path.FillType.EVEN_ODD);
+//        path.moveTo((int) oval.centerX()-10,(int) (oval.centerY()));
+////        path.lineTo(a.x, a.y);
+//        path.lineTo(b.x, b.y);
+//        path.lineTo(c.x, c.y);
+//        path.close();
+//
+//        canvas.drawPath(path, paint);
+
     }
 
     private void drawTicks(Canvas canvas) {
@@ -303,7 +366,7 @@ public class SpeedometerGauge extends View {
         float majorStep = (float) (majorTickStep/ maxSpeed *availableAngle);
         float minorStep = majorStep / (1 + minorTicks);
 
-        float majorTicksLength = 30;
+        float majorTicksLength = 60;
         float minorTicksLength = majorTicksLength/2;
 
         RectF oval = getOval(canvas, 1);
@@ -383,8 +446,8 @@ public class SpeedometerGauge extends View {
         RectF innerOval = getOval(canvas, 0.9f);
         canvas.drawArc(innerOval, 180, 180, true, backgroundInnerPaint);
 
-        Bitmap mask = Bitmap.createScaledBitmap(mMask, (int) (oval.width() * 1.1), (int) (oval.height() * 1.1) / 2, true);
-        canvas.drawBitmap(mask, oval.centerX() - oval.width()*1.1f/2, oval.centerY()-oval.width()*1.1f/2, maskPaint);
+//        Bitmap mask = Bitmap.createScaledBitmap(mMask, (int) (oval.width() * 1.1), (int) (oval.height() * 1.1) / 2, true);
+//        canvas.drawBitmap(mask, oval.centerX() - oval.width()*1.1f/2, oval.centerY()-oval.width()*1.1f/2, maskPaint);
 
         canvas.drawText(unitsText, oval.centerX(), oval.centerY()/1.5f, unitsPaint);
     }
@@ -404,7 +467,7 @@ public class SpeedometerGauge extends View {
         backgroundInnerPaint.setColor(Color.rgb(150, 150, 150));
 
         txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        txtPaint.setColor(Color.WHITE);
+        txtPaint.setColor(Color.GRAY);
         txtPaint.setTextSize(labelTextSize);
         txtPaint.setTextAlign(Paint.Align.CENTER);
         txtPaint.setLinearText(true);
@@ -415,8 +478,8 @@ public class SpeedometerGauge extends View {
         unitsPaint.setTextAlign(Paint.Align.CENTER);
         unitsPaint.setLinearText(true);
 
-        mMask = BitmapFactory.decodeResource(getResources(), R.drawable.spot_mask);
-        mMask = Bitmap.createBitmap(mMask, 0, 0, mMask.getWidth(), mMask.getHeight() / 2);
+//        mMask = BitmapFactory.decodeResource(getResources(), R.drawable.spot_mask);
+//        mMask = Bitmap.createBitmap(mMask, 0, 0, mMask.getWidth(), mMask.getHeight() / 2);
 
         maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         maskPaint.setDither(true);
@@ -428,13 +491,17 @@ public class SpeedometerGauge extends View {
 
         colorLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         colorLinePaint.setStyle(Paint.Style.STROKE);
-        colorLinePaint.setStrokeWidth(5);
+        colorLinePaint.setStrokeWidth(40);
         colorLinePaint.setColor(defaultColor);
 
         needlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        needlePaint.setStrokeWidth(5);
+        needlePaint.setStrokeWidth(3.5f);
         needlePaint.setStyle(Paint.Style.STROKE);
-        needlePaint.setColor(Color.argb(200, 255, 0, 0));
+//        needlePaint.setColor(Color.argb(200, 255, 0, 0));
+//        needlePaint.setColor(Color.argb(200, 236, 91, 113));
+        needlePaint.setColor(Color.rgb(247, 70, 6));
+
+
     }
 
 
@@ -479,6 +546,38 @@ public class SpeedometerGauge extends View {
         public void setEnd(double end) {
             this.end = end;
         }
+    }
+
+    public static Path getEquilateralTriangle(Point p1, int width, Direction direction) {
+        Point p2 = null, p3 = null;
+
+        if (direction == Direction.NORTH) {
+            p2 = new Point(p1.x + width, p1.y);
+            p3 = new Point(p1.x + (width / 2), p1.y - width);
+        }
+        else if (direction == Direction.SOUTH) {
+            p2 = new Point(p1.x + width,p1.y);
+            p3 = new Point(p1.x + (width / 2), p1.y + width);
+        }
+        else if (direction == Direction.EAST) {
+            p2 = new Point(p1.x, p1.y + width);
+            p3 = new Point(p1.x - width, p1.y + (width / 2));
+        }
+        else if (direction == Direction.WEST) {
+            p2 = new Point(p1.x, p1.y + width);
+            p3 = new Point(p1.x + width, p1.y + (width / 2));
+        }
+
+        Path path = new Path();
+        path.moveTo(p1.x, p1.y);
+        path.lineTo(p2.x, p2.y);
+        path.lineTo(p3.x, p3.y);
+
+        return path;
+    }
+
+    public enum Direction {
+        NORTH, SOUTH, EAST, WEST;
     }
 
 }
